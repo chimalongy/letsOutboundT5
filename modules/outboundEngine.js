@@ -1,12 +1,12 @@
 
 const nodemailer = require('nodemailer')
 const cron = require('node-cron')
-const {sendTaskCompletionEmail}= require('./emailSender')
+const { sendTaskCompletionEmail } = require('./emailSender')
 
 const taskModel = require('../models/taskSchema');
 
 function stopCronJob(taskName) {
-    if (global.cronJobs[taskName]) { 
+    if (global.cronJobs[taskName]) {
         global.cronJobs[taskName].stop();
         console.log(`Cron job for ${taskName} has been stopped.`);
         console.log("current jobs =" + cronJobs)
@@ -36,33 +36,33 @@ function sendOutbound(senderEmail, senderPassword, senderName, subject, body, em
 
 
 
-        
+
 
 
         if (index <= emailList.length) {
             const recieverName = nameList[index]
-            const reciverEmail= emailList[index]
-            
-                   
-                    emailContent = `Hello ${recieverName},\n\n${body}`
-                    const mailOptions = {
-                        from: `"${senderName}" <${senderEmail}>`,
-                        to: reciverEmail ,
-                        subject: subject,
-                        text: emailContent
-                    };
+            const reciverEmail = emailList[index]
 
 
-                   console.log(" sending to :" + reciverEmail)
+            emailContent = `Hello ${recieverName},\n\n${body}`
+            const mailOptions = {
+                from: `"${senderName}" <${senderEmail}>`,
+                to: reciverEmail,
+                subject: subject,
+                text: emailContent
+            };
 
 
-                    transporter.sendMail(mailOptions, function (error, info) {
-                        if (error) {
-                            reject("failed to send");
-                        } else {
-                            resolve("email sent");
-                        }
-                    });
+            console.log(" sending to :" + reciverEmail)
+
+
+            transporter.sendMail(mailOptions, function (error, info) {
+                if (error) {
+                    console.log("failed to send to" + reciverEmail);
+                } else {
+                    console.log("email sent" + reciverEmail);
+                }
+            });
             index = index + 1;
         }
         else {
@@ -86,7 +86,7 @@ function sendOutbound(senderEmail, senderPassword, senderName, subject, body, em
         taskModel.findOneAndUpdate({ taskName: taskName }, { $set: { status: 'completed' } }, { new: true })
             .then((updatedDocument) => {
                 if (updatedDocument) {
-                     sendTaskCompletionEmail(senderEmail, outboundName ,taskName)
+                    sendTaskCompletionEmail(senderEmail, outboundName, taskName)
                 } else {
                     console.log('No document found for the given taskName');
                 }
@@ -96,9 +96,9 @@ function sendOutbound(senderEmail, senderPassword, senderName, subject, body, em
             });
 
 
-        stopCronJob(taskName) 
+        stopCronJob(taskName)
 
-    }, timerTime) 
+    }, timerTime)
 
 
     //   
